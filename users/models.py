@@ -12,7 +12,6 @@ class User(AbstractUser):
     base_role=Role.ADMIN
 
     role=models.CharField(max_length=50,choices=Role.choices)
-
     otp = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
