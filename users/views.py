@@ -72,7 +72,7 @@ def setup_otp(request):
             user.toggle_otp()
             user.set_secret()
             # QR code
-            totp = pyotp.TOTP(user.otp_secret)
+            totp = pyotp.TOTP(user.decrypt_otp_secret())
             otp_uri = totp.provisioning_uri(user.username, issuer_name="Django RAW")
             qr = qrcode.make(otp_uri)
             

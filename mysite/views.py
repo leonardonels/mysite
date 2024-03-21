@@ -49,8 +49,7 @@ def otp(request):
         error_message=None
         username = request.session['username']
         user=get_object_or_404(User, username=username)
-        secret=user.otp_secret
-        totp=pyotp.TOTP(secret)
+        totp = pyotp.TOTP(user.decrypt_otp_secret())
         print("Current OTP:", totp.now())
 
         if request.method == 'POST':

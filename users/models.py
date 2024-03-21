@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-import pyotp
+from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
+import pyotp, base64
+from mysite.settings import SECRET_KEY
 
 # Create your models here.
 
@@ -14,7 +17,9 @@ class User(AbstractUser):
 
     role=models.CharField(max_length=50,choices=Role.choices)
     otp = models.BooleanField(default=False)
-    otp_secret = models.CharField(max_length=32, blank=True)
+    otp_secret_encrypted = models.CharField(max_length=200, blank=True)  # Campo per memorizzare il segreto crittografato
+    otp_secret_nonce = models.CharField(max_length=200, blank=True)      # Campo per memorizzare il nonce
+    otp_secret_tag = models.CharField(max_length=200, blank=True)        # Campo per memorizzare il tag di autenticazione
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -43,7 +48,38 @@ class User(AbstractUser):
 
     def set_secret(self):
         self.otp_secret=pyotp.random_base32()
+        self.encrypt_otp_secret()
         self.save()
+
+    def generate_encryption_key(self):
+        secret_key = SECRET_KEY.encode('utf-8')
+        hashed_key = SHA256.new(data=secret_key).digest()
+        return hashed_key[:32]
+
+
+    def encrypt_otp_secret(self):
+        key = self.generate_encryption_key()
+        cipher = AES.new(key, AES.MODE_EAX)  # Usa AES.MODE_EAX
+        nonce = cipher.nonce
+        ciphertext, tag = cipher.encrypt_and_digest(self.otp_secret.encode('utf-8'))
+        #self.otp_secret_encrypted = base64.b64encode(ciphertext)
+        #self.otp_secret_nonce = base64.b64encode(nonce)
+        #self.otp_secret_tag = base64.b64encode(tag)
+        self.otp_secret_encrypted = ciphertext
+        self.otp_secret_nonce = nonce
+        self.otp_secret_tag = tag
+        self.save()
+
+    def decrypt_otp_secret(self):
+        #ciphertext = base64.b64decode(self.otp_secret_encrypted)
+        #nonce = base64.b64decode(self.otp_secret_nonce)
+        #tag = base64.b64decode(self.otp_secret_tag)
+        ciphertext = self.otp_secret_encrypted.encode('utf-8')
+        nonce = self.otp_secret_nonce.encode('utf-8')
+        tag = self.otp_secret_tag.encode('utf-8')
+        cipher = AES.new(self.generate_encryption_key(), AES.MODE_EAX, nonce=nonce)
+        decrypted_otp_secret = cipher.decrypt_and_verify(ciphertext, tag)
+        return decrypted_otp_secret.decode('utf-8')
         
 class NormalUser(User):
 
