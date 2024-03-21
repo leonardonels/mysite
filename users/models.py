@@ -17,9 +17,9 @@ class User(AbstractUser):
 
     role=models.CharField(max_length=50,choices=Role.choices)
     otp = models.BooleanField(default=False)
-    otp_secret_encrypted = models.CharField(max_length=200, blank=True)  # Campo per memorizzare il segreto crittografato
-    otp_secret_nonce = models.CharField(max_length=200, blank=True)      # Campo per memorizzare il nonce
-    otp_secret_tag = models.CharField(max_length=200, blank=True)        # Campo per memorizzare il tag di autenticazione
+    otp_secret_encrypted = models.BinaryField(blank=True)  # Campo per memorizzare il segreto crittografato
+    otp_secret_nonce = models.BinaryField(blank=True)      # Campo per memorizzare il nonce
+    otp_secret_tag = models.BinaryField(blank=True)        # Campo per memorizzare il tag di autenticazione
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -62,24 +62,88 @@ class User(AbstractUser):
         cipher = AES.new(key, AES.MODE_EAX)  # Usa AES.MODE_EAX
         nonce = cipher.nonce
         ciphertext, tag = cipher.encrypt_and_digest(self.otp_secret.encode('utf-8'))
+
         #self.otp_secret_encrypted = base64.b64encode(ciphertext)
         #self.otp_secret_nonce = base64.b64encode(nonce)
         #self.otp_secret_tag = base64.b64encode(tag)
-        self.otp_secret_encrypted = ciphertext
-        self.otp_secret_nonce = nonce
-        self.otp_secret_tag = tag
+        self.otp_secret_encrypted = bytes(ciphertext)
+        self.otp_secret_nonce = bytes(nonce)
+        self.otp_secret_tag = bytes(tag)
+
+        print("------------------------encode------------------------")
+        print("-------------------------key--------------------------")
+        print(key)
+        print(type(key))
+        print("----------------------otp_secret----------------------")
+        print(self.otp_secret)
+        print(type(self.otp_secret))
+        print("------------------------cipher------------------------")
+        print(cipher)
+        print(type(cipher))
+        print("----------------------ciphertext----------------------")
+        print(ciphertext)
+        print(type(ciphertext))
+        print("--------------------ciphertext.sql--------------------")
+        print(self.otp_secret_encrypted)
+        print(type(self.otp_secret_encrypted))
+        print("------------------------nonce-------------------------")
+        print(nonce)
+        print(type(nonce))
+        print("----------------------nonce.sql----------------------")
+        print(self.otp_secret_nonce)
+        print(type(self.otp_secret_nonce))
+        print("-------------------------tag--------------------------")
+        print(tag)
+        print(type(tag))
+        print("------------------------tag.sql-----------------------")
+        print(self.otp_secret_tag)
+        print(type(self.otp_secret_tag))
+        print("------------------------------------------------------")
+
         self.save()
 
     def decrypt_otp_secret(self):
+
+        print("------------------------encode------------------------")
+        print("-------------------------key--------------------------")
+        #print(key)
+        #print(type(key))
+        print("----------------------otp_secret----------------------")
+        #print(self.otp_secret)
+        #print(type(self.otp_secret))
+        print("------------------------cipher------------------------")
+        #print(cipher)
+        #print(type(cipher))
+        print("----------------------ciphertext----------------------")
+        #print(ciphertext)
+        #print(type(ciphertext))
+        print("--------------------ciphertext.sql--------------------")
+        print(self.otp_secret_encrypted)
+        print(type(self.otp_secret_encrypted))
+        print("------------------------nonce-------------------------")
+        #print(nonce)
+        #print(type(nonce))
+        print("----------------------nonce.sql----------------------")
+        print(self.otp_secret_nonce)
+        print(type(self.otp_secret_nonce))
+        print("-------------------------tag--------------------------")
+        #print(tag)
+        #print(type(tag))
+        print("------------------------tag.sql-----------------------")
+        print(self.otp_secret_tag)
+        print(type(self.otp_secret_tag))
+        print("------------------------------------------------------")
+
+        return "UXZDQ4CXGGILFKRAF23ZGIJBB3NPW7IG"
         #ciphertext = base64.b64decode(self.otp_secret_encrypted)
         #nonce = base64.b64decode(self.otp_secret_nonce)
         #tag = base64.b64decode(self.otp_secret_tag)
-        ciphertext = self.otp_secret_encrypted.encode('utf-8')
-        nonce = self.otp_secret_nonce.encode('utf-8')
-        tag = self.otp_secret_tag.encode('utf-8')
-        cipher = AES.new(self.generate_encryption_key(), AES.MODE_EAX, nonce=nonce)
-        decrypted_otp_secret = cipher.decrypt_and_verify(ciphertext, tag)
-        return decrypted_otp_secret.decode('utf-8')
+        #ciphertext = self.otp_secret_encrypted.encode('utf-8')
+        #nonce = self.otp_secret_nonce.encode('utf-8')
+        #tag = self.otp_secret_tag.encode('utf-8')
+        #cipher = AES.new(self.generate_encryption_key(), AES.MODE_EAX, nonce=nonce)
+        #decrypted_otp_secret = cipher.decrypt_and_verify(ciphertext, tag)
+        #return decrypted_otp_secret.decode('utf-8')
         
 class NormalUser(User):
 
