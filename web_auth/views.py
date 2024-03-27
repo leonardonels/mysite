@@ -170,7 +170,6 @@ def set_username_in_session(request):
         request_data=json.loads(request.body)
         username = request_data.get('username')
         if username:
+            print('username: ',username)
             request.session['username'] = username
             request.session.modified = True
-            return JsonResponse({'success': True})
-    return JsonResponse({'success': False}, status=400)

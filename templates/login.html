@@ -5,7 +5,7 @@
 {% block content %}
 
 {% if error_message %}
-<p>{{ error_message }}</p>
+<p style="color: red;">{{ error_message }}</p>
 {% endif %}
 
 <div class="justify-content-Start">
@@ -38,6 +38,10 @@
 
         loginWithPasskeyButton.addEventListener('click', function(event) {
             const username = document.getElementById('username').value;
+            if (username.trim() === '') {
+                alert("Username required {% for  in  %}{% endfor %} passkeys");
+                return; // Interrompi il processo se il campo è vuoto
+            }
 
             const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 

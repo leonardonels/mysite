@@ -24,7 +24,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure--*omvbrtbb#d876by%s@s_1#na+1)!j8m_q@13da%)(n$k$5&&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ENVIROMENT = 'debug'
+#ENVIROMENT = 'production'
+
+if os.environ.get('ENVIROMENT')=='production':
+    REPLYING_PARTY_ID = "leonardonels.eu.pythonanywhere"
+    ORIGIN = "https://leonardonels.eu.pythonanywhere.com"
+    REPLYING_PARY_NAME = "mysite"
+    DEBUG = False
+else:
+    DEBUG = True
+    REPLYING_PARTY_ID = "localhost"
+    ORIGIN = "http://localhost:8000"
+    REPLYING_PARY_NAME = "mysite"
 
 ALLOWED_HOSTS = ['*']
 
@@ -139,11 +151,6 @@ AUTH_USER_MODEL = "users.User"
 
 STATIC_ROOT=(os.path.join(BASE_DIR,'static'))
 #STATICFILES_DIRS=[os.path.join(BASE_DIR,'static')]
-
-
-REPLYING_PARTY_ID = "localhost"
-ORIGIN = "http://localhost:8000"
-REPLYING_PARY_NAME = "mysite"
 
 
 AUTHENTICATION_BACKENDS = [
