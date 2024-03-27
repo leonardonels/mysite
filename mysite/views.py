@@ -14,7 +14,9 @@ def home(request):
 def signup(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
+        print("form")
         if form.is_valid():
+            print("is valid")
             user = form.save()
             # Log in the user
             login(request, user)
