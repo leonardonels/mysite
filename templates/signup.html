@@ -4,10 +4,39 @@
 
 {% block content %}
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Sign Up</button>
-</form>
+{% if error_message %}
+<p style="color: red;">{{ error_message }}</p>
+{% endif %}
+{% if form.errors %}
+    <ul>
+    {% for field in form %}
+        {% for error in field.errors %}
+            <li style="color: red;">{{ field.label }}: {{ error }}</li>
+        {% endfor %}
+    {% endfor %}
+    </ul>
+{% endif %}
+
+<div class="justify-content-start">
+    <form method="post">
+        {% csrf_token %}
+        <div class="col-3" style="max-width: 300px;">
+                <label for="id_username">Username:</label>
+                <input type="text" name="username" class="form-control" autofocus="" required="" id="id_username" autocomplete="username">
+        </div>
+        <div class="col-3" style="max-width: 300px;">
+            <label for="id_password1">Password:</label>
+            <input type="password" name="password1" autocomplete="new-password" class="form-control" required="" aria-describedby="id_password1_helptext" id="id_password1">
+        </div>
+        <span class="helptext" id="id_password1_helptext"></span></p><ul><li>Your password must contain at least 8 characters.</li><li>Your password can’t be a commonly used password.</li><li>Your password can’t be entirely numeric.</li></ul>
+        <div class="col-3" style="max-width: 300px;">
+            <label for="id_password2">Password confirmation:</label>
+            <input type="password" name="password2" autocomplete="new-password" class="form-control" required="" aria-describedby="id_password2_helptext" id="id_password2">
+        </div>
+        <div class="d-grid gap-2 mt-3 col-3" style="max-width: 300px;">
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </div>
+    </form>
+</div>
 
 {% endblock %}
