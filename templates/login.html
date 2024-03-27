@@ -39,8 +39,8 @@
         loginWithPasskeyButton.addEventListener('click', function(event) {
             const username = document.getElementById('username').value;
             if (username.trim() === '') {
-                alert("Username required {% for  in  %}{% endfor %} passkeys");
-                return; // Interrompi il processo se il campo è vuoto
+                alert("Username required for passkeys");
+                return;
             }
 
             const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
