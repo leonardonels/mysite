@@ -34,6 +34,10 @@
             // @simplewebauthn/server -> generateAuthenticationOptions()
             const resp = await fetch('/web_auth/authentication/');
             const options = await resp.json();
+            if (options.verified === false) {
+                alert(options.msg);
+                window.location.href = '/login';
+            }
             
             let asseResp;
             try {
@@ -64,6 +68,8 @@
                 window.location.href = '/home';
             } else {
                 console.error('Something went wrong!', verificationJSON);
+                alert("Verification Failed!")
+                window.location.href = '/login';
             }
         });
     });

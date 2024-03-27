@@ -82,9 +82,12 @@ def registration_verification(request):
 def authentication(request):
 
     #get User informations
-    username = request.session['username']
-    user=get_object_or_404(User, username=username)
-
+    try:
+        username = request.session['username']
+        user=User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"verified":False, "msg":"Invalid User", "status":400})
+    
     #start the ceremony
     allow_credentials: List[PublicKeyCredentialDescriptor] = []
     for cred in user.credentials.all():
