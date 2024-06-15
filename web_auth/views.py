@@ -13,12 +13,79 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 import json, base64
 
+def new_registration(request):
+
+    #get User informations
+    username=request.session['username']
+    user = User.objects.get(username=username)
+    
+    #start the ceremony
+    options=generate_registration_options(
+        rp_id=REPLYING_PARTY_ID,
+        rp_name=REPLYING_PARY_NAME,
+        user_id=str(user.id).encode('utf-8'),
+        user_name=user.username,
+        attestation=AttestationConveyancePreference.DIRECT,
+    )
+
+    #create and save the challenge
+    challenge = base64.b64encode(options.challenge).decode('utf-8')
+    TemporaryChallenge.objects.create(user=user, challenge=challenge)
+
+    return JsonResponse(json.loads(options_to_json(options)))
+
+def new_registration_verification(request):
+
+    #get User informations
+    username=request.session['username']
+    user = User.objects.get(username=username)
+
+    #start registration flow
+    request_body=request.body.decode('utf-8')
+    try:
+        credential=parse_registration_credential_json(request_body)
+        temp_challenge = TemporaryChallenge.objects.filter(user=user)
+        challenge = base64.b64decode(temp_challenge.last().challenge.encode('utf-8'))
+
+        if temp_challenge is not None:
+            verification=verify_registration_response(
+                credential=credential,
+                expected_challenge=challenge,
+                expected_rp_id=REPLYING_PARTY_ID,
+                expected_origin=ORIGIN,
+            )
+
+            # Delete the temporary challenge from the database
+            temp_challenge.delete()
+
+    except Exception as err:
+        return JsonResponse({"verified":False, "msg":str(err), "status":400})
+        
+    #creating a new credential for the user
+    new_credential = Credential.objects.create(
+        user=user,
+        credential_id=verification.credential_id,
+        public_key=verification.credential_public_key,
+        sign_counts=verification.sign_count,
+    )
+    new_credential.set_transports(credential.response.transports)
+    if not User_Verification.objects.filter(credential_id=new_credential.id).first():
+        User_Verification.objects.create(
+            value=True,
+            user=user,
+            credential=new_credential,
+        )
+    user.set_custom_backend()
+    login(request, user)
+
+    return JsonResponse({"verified":True})
+
 @login_required
 def registration(request):
 
     #get User informations
     user=request.user
-
+    
     #start the ceremony
     options=generate_registration_options(
         rp_id=REPLYING_PARTY_ID,
@@ -181,6 +248,35 @@ def set_username_in_session(request):
                 return JsonResponse({'success': True})
             else:
                 return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+        except Exception:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+def delete_user_view(request, username):
+    try:
+        user = User.objects.get(username=username)
+        user.delete()
+        return JsonResponse({'message': 'User deleted successfully.'}, status=200)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User does not exist.'}, status=404)
+
+def set_new_username_in_session(request):
+    if request.method == 'POST':
+        try:
+            request_data = json.loads(request.body)
+            username = request_data.get('username')
+
+            # Verifica se l'username esiste già
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'success': False, 'error': 'An user with the same name already exists'}, status=406)
+            else:
+                # Crea il nuovo utente
+                user = User.objects.create(username=username)
+                user.set_unusable_password()  # Imposta una password non utilizzabile
+                user.save()
+                request.session['username'] = username
+                request.session.modified = True
+                return JsonResponse({'success': True})
         except Exception:
             return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
