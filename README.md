@@ -1,6 +1,7 @@
 # mysite
 
-    This is a university project for my Computer Engeneering thesis that aims to demonstrate the implementation of a secure platform for users to access and share content while ensuring their privacy using Passkey authentication.
+This is a university project for my Computer Engeneering thesis that aims to demonstrate the implementation of a secure platform for users to access and share content while ensuring their privacy using Passkey authentication.
+    
     The data collected is used exclusively to manage user access to the site and ensure a safe browsing experience. User data is not sold, shared, or distributed to third parties. RAW does not store images or other multimedia files on our servers. Any images or content displayed through the site are linked to third-party services. We are not responsible for the content or management of these files by third-party platforms.
 
 WARNING: Passkey sign-up is not implemented yet so to use passkey create a profile with username and password first. From there you can test otp functionality as well as passkeys.
