@@ -7,7 +7,7 @@ This is a university project for my Computer Engeneering thesis that aims to dem
 WARNING: Passkey sign-up is not implemented yet so to use passkey create a profile with username and password first. From there you can test otp functionality as well as passkeys.
 
     To test it by yourself:
-      1. clone this repository
+      1. clone this repository and rename the main folder to mysite
       2. highly suggested to create a virtuale enviroment, 'pipenv' was used during developement
       3. if you have decided to use pipenv enter the virtual enviroment
          $ pipenv shell
