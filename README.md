@@ -24,3 +24,6 @@ WARNING: Passkey sign-up is not implemented yet so to use passkey create a profi
 ![Screenshot 2024-03-27 alle 10 52 59](https://github.com/leonardonels/mysite/assets/81677769/0bfc6bfe-d210-499a-8cc6-34979462af02)
 ![Screenshot 2024-03-27 alle 10 53 04](https://github.com/leonardonels/mysite/assets/81677769/e7e56faf-b66e-4d31-8912-ed619a51b6fb)
 ![Screenshot 2024-03-27 alle 10 53 15](https://github.com/leonardonels/mysite/assets/81677769/d11fcd7d-0dec-48d0-88ad-4204d2e43d2f)
+
+notes:
+    if a registration_with_passkey fails the username is not removed form db.
