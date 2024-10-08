@@ -10,15 +10,29 @@
         <div style="max-width: 300px;">
             <div class="form-group">
                 <label for="id_username">Username:</label>
-                <input type="text" class="form-control" name="username" maxlength="25" autofocus="" required="" id="id_username">
+                <input type="text" class="form-control" name="username" maxlength="25" autofocus="" required="" id="id_username" value="{{ form.username.value|default:'' }}">
+                {% if form.username.errors %}
+                    <div class="text-danger">
+                        {% for error in form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-            
+
             <div class="form-group mt-3">
                 <label for="id_password1">Password:</label>
-                <input type="password" class="form-control" name="password1" autocomplete="new-password" required="" aria-describedby="id_password1_helptext" id="id_password1">
+                <input type="password" class="form-control" name="password1" autocomplete="new-password" required="" id="id_password1" value="{{ form.password1.value|default:'' }}">
+                {% if form.password1.errors %}
+                    <div class="text-danger">
+                        {% for error in form.password1.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         </div>
-            
+
         <div class="mt-3">
             <ul>
                 <li>Your password must contain at least 8 characters.</li>
@@ -26,11 +40,18 @@
                 <li>Your password can’t be entirely numeric.</li>
             </ul>
         </div>
-        
+
         <div style="max-width: 300px;">
             <div class="form-group">
                 <label for="id_password2">Password confirmation:</label>
-                <input type="password" class="form-control" name="password2" autocomplete="new-password" required="" aria-describedby="id_password2_helptext" id="id_password2">
+                <input type="password" class="form-control" name="password2" autocomplete="new-password" required="" id="id_password2" value="{{ form.password2.value|default:'' }}">
+                {% if form.password2.errors %}
+                    <div class="text-danger">
+                        {% for error in form.password2.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             <div class="d-grid gap-2 mt-3">
                 <button type="submit" class="btn btn-primary">Sign Up</button>
@@ -131,7 +152,7 @@
                 //attesa del risultato della verifica
                 const verificationJSON = await verificationResp.json();
 
-                //se la verifica è andata a buon fine, la pagina viene ricaricata per riflettere lo stato aggiornato. 
+                //se la verifica è andata a buon fine, la pagina viene ricaricata per riflettere lo stato aggiornato.
                 //altrimenti, viene mostrato un messaggio di errore.
                 if (verificationJSON && verificationJSON.verified) {
                     console.log('Success!');
