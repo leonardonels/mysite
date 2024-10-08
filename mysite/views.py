@@ -19,6 +19,8 @@ def signup(request):
             # Log in the user
             login(request, user)
             return redirect('home')  # Redirect to the home page after signup
+        else:
+            return render(request, 'signup.html', {'form': form})
     else:
         form = RegistrationForm()
     return render(request, 'signup.html', {'form': form})
