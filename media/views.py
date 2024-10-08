@@ -4,19 +4,23 @@ from django.contrib.auth.decorators import login_required
 from .models import image_link
 from .forms import *
 
-@login_required
 def upload_image(request):
-    if request.method == 'POST':
-        form = ImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Associate the current user with the uploaded image
-            img = form.save(commit=False)
-            img.user = request.user
-            img.save()
-            return redirect('home')  # Redirect to home or wherever appropriate
+     # Check if the user is authenticated
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = ImageForm(request.POST, request.FILES)
+            if form.is_valid():
+                # Associate the current user with the uploaded image
+                img = form.save(commit=False)
+                img.user = request.user
+                img.save()
+                return redirect('home')  # Redirect to home or wherever appropriate
+        else:
+            form = ImageForm()
+        return render(request, 'upload_image.html', {'form': form})
     else:
-        form = ImageForm()
-    return render(request, 'upload_image.html', {'form': form})
+        # Redirect to login page if the user is not authenticated
+        return redirect('/web_auth/login')
 
 def search(request):
     query = request.GET.get('q', '')  # Get the search query from request parameters
